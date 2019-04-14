@@ -1,6 +1,32 @@
+<a name="0.7.0"></a>
+# 0.7.0 (2019-04-14)
+
+
+### Build
+
+* Use 19.04 tag instead 18.04 ([fb1ae3451ecfa190fe99f020b97242a51ad5250b](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/fb1ae3451ecfa190fe99f020b97242a51ad5250b))
+
+### Docs
+
+* Update main README, adding elements included section ([7b0393fa33c71bf5621d043b5fa7151fb4c7d440](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/7b0393fa33c71bf5621d043b5fa7151fb4c7d440))
+
+### Update
+
+* Change base to rattydave ubuntu 19.04 ([3cdd60d95071123ecc60cdeefecf68a9bd52e05f](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/3cdd60d95071123ecc60cdeefecf68a9bd52e05f))
+
+### Upgrade
+
+* Use ubuntu 19.04 as duing base ([66a64140445574bfa81ef95c89680bc9b0628bec](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/66a64140445574bfa81ef95c89680bc9b0628bec))
+
+
+
 <a name="0.6.0"></a>
 # 0.6.0 (2019-04-14)
 
+
+### Build
+
+* Update CHANGELOG.md to v0.6.0 with Red Panda JPL ([4d456a7ab1c1b1fc6caed3f21d7659510a895c18](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/4d456a7ab1c1b1fc6caed3f21d7659510a895c18))
 
 ### Fix
 

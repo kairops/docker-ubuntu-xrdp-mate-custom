@@ -1,6 +1,4 @@
-#FROM ubuntu:latest
-#FROM rattydave/ubuntu-ssh:18.10
-FROM ubuntu:18.10
+FROM ubuntu:19.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
@@ -42,8 +40,6 @@ RUN cd /root && \
         mate-window-title-applet \
         ubuntu-mate-icon-themes \
         ubuntu-mate-themes \
-        xrdp \
-        xorgxrdp \
         tightvncserver && \
     apt-get install --no-install-recommends -yqq \
         supervisor \
@@ -57,12 +53,67 @@ RUN cd /root && \
         wget \
         epiphany-browser && \
     ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get -y install \
+        git \
+        libxfont-dev \
+        xserver-xorg-core \
+        libx11-dev \
+        libxfixes-dev \
+        libssl-dev \
+        libpam0g-dev \
+        libtool \
+        libjpeg-dev \
+        flex \
+        bison \
+        gettext \
+        autoconf \
+        libxml-parser-perl \
+        libfuse-dev \
+        xsltproc \
+        libxrandr-dev \
+        python-libxml2 \
+        nasm \
+        xserver-xorg-dev \
+        fuse \
+        build-essential \
+        pkg-config && \
+    git clone -b devel https://github.com/neutrinolabs/xrdp.git && \
+    git clone -b devel https://github.com/neutrinolabs/xorgxrdp.git && \
+    cd /root/xrdp && ./bootstrap && ./configure --enable-fuse --enable-jpeg && make && make install && \
+    cd /root/xorgxrdp  && ./bootstrap && ./configure && make && make install && \
+    rm -R /root/xrdp && \
+    rm -R /root/xorgxrdp && \
+   apt-get -y purge \
+        git \
+        libxfont-dev \
+        libx11-dev \
+        libxfixes-dev \
+        libssl-dev \
+        libpam0g-dev \
+        libtool \
+        libjpeg-dev \
+        flex \
+        bison \
+        gettext \
+        autoconf \
+        libxml-parser-perl \
+        libfuse-dev \
+        xsltproc \
+        libxrandr-dev \
+        python-libxml2 \
+        nasm \
+        xserver-xorg-dev \
+        build-essential \
+        pkg-config && \
+        #        fuse \
     apt-get -y autoclean && apt-get -y autoremove && \
     apt-get -y purge $(dpkg --get-selections | grep deinstall | sed s/deinstall//g) && \
     rm -rf /var/lib/apt/lists/*  && \
     echo "mate-session" > /etc/skel/.xsession && \
     sed -i '/TerminalServerUsers/d' /etc/xrdp/sesman.ini  && \
     sed -i '/TerminalServerAdmins/d' /etc/xrdp/sesman.ini  && \
+    sed -i -e '/DisconnectedTimeLimit=/ s/=.*/=0/' /etc/xrdp/sesman.ini && \
+    sed -i -e '/IdleTimeLimit=/ s/=.*/=0/' /etc/xrdp/sesman.ini && \
     xrdp-keygen xrdp auto  && \
     mkdir -p /var/run/xrdp && \
     chmod 2775 /var/run/xrdp  && \
@@ -74,22 +125,13 @@ RUN cd /root && \
     echo "stderr_logfile=/var/log/supervisor/%(program_name)s.log" >> /etc/supervisor/conf.d/sshd.conf && \
     echo "autorestart=true" >> /etc/supervisor/conf.d/sshd.conf && \
     echo "[program:xrdp-sesman]" > /etc/supervisor/conf.d/xrdp.conf && \
-    echo "command=/usr/sbin/xrdp-sesman --nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
+    echo "command=/usr/local/sbin/xrdp-sesman --nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "process_name = xrdp-sesman" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "[program:xrdp]" >> /etc/supervisor/conf.d/xrdp.conf && \
-    echo "command=/usr/sbin/xrdp -nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
+    echo "command=/usr/local/sbin/xrdp -nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "process_name = xrdp" >> /etc/supervisor/conf.d/xrdp.conf
-    #echo "[Desktop Entry]" > /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "Type=Application" >> /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "Exec=setxkbmap gb" >> /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "Hidden=false" >> /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "X-MATE-Autostart-enabled=true" >> /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "Name[C]=SetKeyBoard GB" >> /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "Name=SetKeyBoard GB" >> /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "Comment[C]=Sets the keyboard to GB" >> /etc/xdg/autostart/setxkbmap.desktop && \
-    #echo "Comment=Sets the keyboard to GB" >> /etc/xdg/autostart/setxkbmap.desktop
 
-ADD   xrdp.ini /etc/xrdp/xrdp.ini
+ADD xrdp.ini /etc/xrdp/xrdp.ini
 
 ADD startup.sh /root/startup.sh
 CMD ["/bin/bash", "/root/startup.sh"]
