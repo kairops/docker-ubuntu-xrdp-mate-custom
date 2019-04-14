@@ -46,7 +46,7 @@ $ docker run -d --name duing \
            kairops/duing
 ```
 
-2. Access with a remote desktop client to localhost:3389 using "ubuntu" user and "ubuntu" password
+2. Access with a remote desktop client to localhost:3389 using `ubuntu` user and `ubuntu` password
 
 3. Open a terminal and execute the Gherkin BDD tests with PhantomJS, Chrome and Firefox drivers
 
@@ -127,3 +127,12 @@ total 96
 And, of course...
 
 4. Enjoy!
+
+## Elements included
+
+- Ubuntu 19.04 as base system
+- VSCodium / GEdit as code editors
+- Request proxy with privoxy (take a look at /var/log/privoxy/ as `root` user)
+- Firefox and Chromium as web browser
+- PhantomJS as headless browser
+- BDDFire project as testing tramework
