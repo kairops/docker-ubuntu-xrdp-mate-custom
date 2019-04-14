@@ -1,6 +1,25 @@
+<a name="0.6.0"></a>
+# 0.6.0 (2019-04-14)
+
+
+### Fix
+
+* Resolve typos in duing Dockerfile ([118b93f064e206d1723ab6e06b8406cd449614fb](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/118b93f064e206d1723ab6e06b8406cd449614fb))
+
+### Update
+
+* Change privoxy location in Dockerfile ([7e7fe2270eeba83896d1d39db238a34a8e5a556a](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/7e7fe2270eeba83896d1d39db238a34a8e5a556a))
+* Review Dockerfile recipie ([78636d7d3fecc1acc573355b68066d231ae273ad](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/78636d7d3fecc1acc573355b68066d231ae273ad))
+
+
+
 <a name="0.5.0"></a>
 # 0.5.0 (2019-04-14)
 
+
+### Build
+
+* Update CHANGELOG.md to v0.5.0 with Red Panda JPL ([55a95f456433ba1805e94c439378d0c7159d07b1](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/55a95f456433ba1805e94c439378d0c7159d07b1))
 
 ### Docs
 
