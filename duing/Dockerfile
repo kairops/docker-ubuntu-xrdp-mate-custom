@@ -55,7 +55,7 @@ RUN cd /root && \
         wget \
         epiphany-browser && \
     ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && \
-    apt-get install -yqq chromium-browser chromium-chromedriver gcc make ruby ruby-dev rubygems zlibc zlib1g zlib1g-dev libxml2 libxml2-dev gedit git npm firefox && \
+    apt-get install -yqq privoxy chromium-browser chromium-chromedriver gcc make ruby ruby-dev rubygems zlibc zlib1g zlib1g-dev libxml2 libxml2-dev gedit git npm firefox && \
     wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg | apt-key add - && \
     echo 'deb https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/debs/ vscodium main' >> /etc/apt/sources.list && \
     apt-get update -y && \
@@ -109,9 +109,6 @@ RUN git clone https://github.com/red-panda-ci/ci-scripts /opt/duingdemo/ci-scrip
     sed "s#www.google.com#www.google.com?hl=es#g" -i features/bddfire.feature && \
     cp config.yml.dist config.yml && \
     chown -R ubuntu:ubuntu /opt/duingdemo
-
-RUN apt-get update && \
-    apt-get install -y privoxy
 
 RUN sed -i "s#listen-address  \[::1\]:8118##g" /etc/privoxy/config && \
     echo "debug 1" >> /etc/privoxy/config && \
