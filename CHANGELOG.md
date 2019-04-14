@@ -1,5 +1,23 @@
+<a name="0.5.0"></a>
+# 0.5.0 (2019-04-14)
+
+
+### Docs
+
+* Review main README ([4b721358ecc3129501b8fc2d5ea81b776e9d3575](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/4b721358ecc3129501b8fc2d5ea81b776e9d3575))
+
+### Fix
+
+* delete sudo in apt-get install -y vscodium ([a5cd2b4d4f692689eb45767823a5ae3f038ee6f7](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/a5cd2b4d4f692689eb45767823a5ae3f038ee6f7))
+
+### New
+
+* Add Vscodium ([c39d8b3e4a7f495d08fc99e057f6ea9f1b06cd33](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/c39d8b3e4a7f495d08fc99e057f6ea9f1b06cd33))
+
+
+
 <a name="0.4.0"></a>
-# 0.4.0 (2019-03-21)
+# 0.4.0 (2019-03-25)
 
 
 ### Build
@@ -7,6 +25,7 @@
 * Change redpanda with kairops pipeline reference ([7f44310087e6887e6e837ccc6aef744dd9ec8323](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/7f44310087e6887e6e837ccc6aef744dd9ec8323))
 * Remove one more redpanda reference in pipeline ([c19ffc62e7343310db2fca9d602f4fb2cbb93878](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/c19ffc62e7343310db2fca9d602f4fb2cbb93878))
 * Remove slack notifications ([313675fe589e6626d2fc4d86a5b15602e45b718a](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/313675fe589e6626d2fc4d86a5b15602e45b718a))
+* Update CHANGELOG.md to v0.4.0 with Red Panda JPL ([833d22a66064283648e9b6d59909ce33fc46a0ad](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/833d22a66064283648e9b6d59909ce33fc46a0ad))
 * Update to jpl v2.7.0 ([edf1b4913b0cfcf4080ac7f019181403f5900bee](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/edf1b4913b0cfcf4080ac7f019181403f5900bee))
 * Use the right docker Jenkins credentials name ([499a256bb8b9b8d357c9a86fada38f6a2b3942e7](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/499a256bb8b9b8d357c9a86fada38f6a2b3942e7))
 
