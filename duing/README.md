@@ -2,15 +2,16 @@
 
 Docker Ubuntu INstant Gherkin
 
-## What?
+## What
 
-An ephemeral environment for BDD testing design with Gherkin
+An ephemeral environment for the design and execution of BDD tests with Gherkin
+
+Key points:
 
 - Start a container with an ubuntu desktop and all the tools to develop BDD Test using Gherkin, like this one
 
 ```gherkin
 Feature: Google Search to explore BDDfire
-
 
 Scenario: View home page
 Given I am on "http://www.google.com"
@@ -19,7 +20,7 @@ Then I should see "Sign in"
 ```
 
 - Find a ready-to-use ruby library of predefined steps
-- Edit the Gherkin features and execute them on Chrome, Firefox and PhantomJS web browsers
+- Edit the Gherkin features wth VSCodium and execute them on Chrome, Firefox and PhantomJS web browsers
 - Save screenshots of every test step run
 
 ## Credits
@@ -28,6 +29,8 @@ Based on:
 
 - Rattydave Ubuntu XRDP and MATE virtual desktop project https://hub.docker.com/r/rattydave/docker-ubuntu-xrdp-mate-custom/
 - Shakistan86 BDDFire Instant Cucumber-BDD Framework https://github.com/Shashikant86/bddfire
+
+Special thanks to [@Spectertj](https://github.com/Spectertj) for adding [VSCodium](https://github.com/VSCodium/vscodium)
 
 ## How to give a try
 
@@ -43,9 +46,9 @@ $ docker run -d --name duing \
            kairops/duing
 ```
 
-2. Access with remote desktop to localhost:3389 with "ubuntu" user and "ubuntu" password
+2. Access with a remote desktop client to localhost:3389 using "ubuntu" user and "ubuntu" password
 
-3. Open a terminal and execute the test with PhantomJS, Chrome and Firefox drivers
+3. Open a terminal and execute the Gherkin BDD tests with PhantomJS, Chrome and Firefox drivers
 
 ```console
 ubuntu@ce48d033045e:/opt/duingdemo/ci-scripts/test/cucumber$ rake poltergeist
