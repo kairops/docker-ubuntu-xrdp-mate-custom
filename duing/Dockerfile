@@ -1,4 +1,4 @@
-FROM rattydave/ubuntu-ssh:18.10
+FROM ubuntu:19.04
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
@@ -40,8 +40,6 @@ RUN cd /root && \
         mate-window-title-applet \
         ubuntu-mate-icon-themes \
         ubuntu-mate-themes \
-        xrdp \
-        xorgxrdp \
         tightvncserver && \
     apt-get install --no-install-recommends -yqq \
         supervisor \
@@ -55,6 +53,36 @@ RUN cd /root && \
         wget \
         epiphany-browser && \
     ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get -y install \
+        git \
+        libxfont-dev \
+        xserver-xorg-core \
+        libx11-dev \
+        libxfixes-dev \
+        libssl-dev \
+        libpam0g-dev \
+        libtool \
+        libjpeg-dev \
+        flex \
+        bison \
+        gettext \
+        autoconf \
+        libxml-parser-perl \
+        libfuse-dev \
+        xsltproc \
+        libxrandr-dev \
+        python-libxml2 \
+        nasm \
+        xserver-xorg-dev \
+        fuse \
+        build-essential \
+        pkg-config && \
+    git clone -b devel https://github.com/neutrinolabs/xrdp.git && \
+    git clone -b devel https://github.com/neutrinolabs/xorgxrdp.git && \
+    cd /root/xrdp && ./bootstrap && ./configure --enable-fuse --enable-jpeg && make && make install && \
+    cd /root/xorgxrdp  && ./bootstrap && ./configure && make && make install && \
+    rm -R /root/xrdp && \
+    rm -R /root/xorgxrdp && \
     apt-get install -yqq privoxy chromium-browser chromium-chromedriver gcc make ruby ruby-dev rubygems zlibc zlib1g zlib1g-dev libxml2 libxml2-dev gedit git npm firefox && \
     wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg | apt-key add - && \
     echo 'deb https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/debs/ vscodium main' >> /etc/apt/sources.list && \
@@ -66,6 +94,8 @@ RUN cd /root && \
     echo "mate-session" > /etc/skel/.xsession && \
     sed -i '/TerminalServerUsers/d' /etc/xrdp/sesman.ini  && \
     sed -i '/TerminalServerAdmins/d' /etc/xrdp/sesman.ini  && \
+    sed -i -e '/DisconnectedTimeLimit=/ s/=.*/=0/' /etc/xrdp/sesman.ini && \
+    sed -i -e '/IdleTimeLimit=/ s/=.*/=0/' /etc/xrdp/sesman.ini && \
     xrdp-keygen xrdp auto  && \
     mkdir -p /var/run/xrdp && \
     chmod 2775 /var/run/xrdp  && \
@@ -77,15 +107,15 @@ RUN cd /root && \
     echo "stderr_logfile=/var/log/supervisor/%(program_name)s.log" >> /etc/supervisor/conf.d/sshd.conf && \
     echo "autorestart=true" >> /etc/supervisor/conf.d/sshd.conf && \
     echo "[program:xrdp-sesman]" > /etc/supervisor/conf.d/xrdp.conf && \
-    echo "command=/usr/sbin/xrdp-sesman --nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
+    echo "command=/usr/local/sbin/xrdp-sesman --nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "process_name = xrdp-sesman" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "[program:xrdp]" >> /etc/supervisor/conf.d/xrdp.conf && \
-    echo "command=/usr/sbin/xrdp -nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
+    echo "command=/usr/local/sbin/xrdp -nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "process_name = xrdp" >> /etc/supervisor/conf.d/xrdp.conf
     
 ADD xrdp.ini /etc/xrdp/xrdp.ini
 
-ADD startup.sh  /root/startup.sh
+ADD startup.sh /root/startup.sh
 
 RUN gem install bddfire 
 
