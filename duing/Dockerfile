@@ -105,8 +105,8 @@ RUN git clone https://github.com/red-panda-ci/ci-scripts /opt/duingdemo/ci-scrip
     cd ci-scripts/test/cucumber && \
     bundle install && \
     sed "s/ddefault_max_wait_time/default_max_wait_time/g" -i features/support/env.rb && \
-    sed "s#--load-images=no#--load-imags=yes#g" -i features/support/env.rb && \
-    sed "s#www.google.com#www.google.com?hl=es#g" -i features/bddfire.feature && \
+    sed "s#--load-images=no#--load-images=yes#g" -i features/support/env.rb && \
+    sed "s#www.google.com#www.google.com?hl=en#g" -i features/bddfire.feature && \
     cp config.yml.dist config.yml && \
     chown -R ubuntu:ubuntu /opt/duingdemo
 
