@@ -10,7 +10,8 @@ RUN apt-get update -y && \
     apt-get -y purge $(dpkg --get-selections | grep deinstall | sed s/deinstall//g) && \
     rm -rf /var/lib/apt/lists/*
     
-RUN gem install bddfire 
+RUN gem install rake && \
+    gem install bddfire
 
 ADD gherkin.lang /usr/share/gtksourceview-3.0/language-specs/gherkin.lang
 
