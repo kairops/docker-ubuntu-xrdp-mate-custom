@@ -1,9 +1,9 @@
 #!groovy
 
-@Library('github.com/red-panda-ci/jenkins-pipeline-library@v2.7.0') _
+@Library('github.com/red-panda-ci/jenkins-pipeline-library@v3.1.5') _
 
 // Initialize global config
-cfg = jplConfig('duing', 'docker', '', [slack: '', email:'redpandaci+duing@gmail.com'])
+cfg = jplConfig('duing', 'docker', '', [email:'redpandaci+duing@gmail.com'])
 
 pipeline {
     agent none
@@ -27,6 +27,13 @@ pipeline {
             agent { label 'docker' }
             steps  {
                 sh 'bin/test.sh'
+            }
+        }
+        stage ('Make new release automatically') {
+            agent { label 'docker' }
+            when { branch 'release/new' }
+            steps {
+                jplMakeRelease(cfg, true)
             }
         }
         stage ('Release confirm') {
