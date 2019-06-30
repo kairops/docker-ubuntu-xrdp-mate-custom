@@ -5,13 +5,6 @@
 // Initialize global config
 cfg = jplConfig('duing', 'docker', '', [email:'redpandaci+duing@gmail.com'])
 
-def publishDockerImage() {
-    sh "docker rmi kairops/duing:test kairops/duing:19.04 || true"
-    jplDockerPush (cfg, "kairops/duing", cfg.releaseTag, "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
-    jplDockerPush (cfg, "kairops/duing", "19.04", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
-    jplDockerPush (cfg, "kairops/duing", "latest", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
-}
-
 pipeline {
     agent none
 
@@ -40,7 +33,10 @@ pipeline {
             agent { label 'docker' }
             when { branch 'release/new' }
             steps {
-                publishDockerImage()
+                sh "docker rmi kairops/duing:test kairops/duing:19.04 || true"
+                jplDockerPush (cfg, "kairops/duing", cfg.releaseTag, "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
+                jplDockerPush (cfg, "kairops/duing", "19.04", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
+                jplDockerPush (cfg, "kairops/duing", "latest", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
                 jplMakeRelease(cfg, true)
             }
         }
