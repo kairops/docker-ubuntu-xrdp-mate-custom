@@ -34,6 +34,7 @@ pipeline {
             when { branch 'release/new' }
             steps {
                 sh "docker rmi kairops/duing:test kairops/duing:19.04 || true"
+                script { cfg.releaseTag = sh (script: "kd get-next-release-number .", returnStdout: true).trim() }
                 jplDockerPush (cfg, "kairops/duing", cfg.releaseTag, "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
                 jplDockerPush (cfg, "kairops/duing", "19.04", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
                 jplDockerPush (cfg, "kairops/duing", "latest", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
