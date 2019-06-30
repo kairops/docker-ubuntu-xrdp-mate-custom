@@ -1,6 +1,6 @@
 #!groovy
 
-@Library('github.com/red-panda-ci/jenkins-pipeline-library@v3.1.5') _
+@Library('github.com/red-panda-ci/jenkins-pipeline-library@v3.1.6') _
 
 // Initialize global config
 cfg = jplConfig('duing', 'docker', '', [email:'redpandaci+duing@gmail.com'])
@@ -33,24 +33,12 @@ pipeline {
             agent { label 'docker' }
             when { branch 'release/new' }
             steps {
-                jplMakeRelease(cfg, true)
-            }
-        }
-        stage ('Release confirm') {
-            when { branch 'release/v*' }
-            steps {
-                jplPromoteBuild(cfg)
-            }
-        }
-        stage ('Release finish') {
-            agent { label 'docker' }
-            when { expression { cfg.BRANCH_NAME.startsWith('release/v') && cfg.promoteBuild.enabled } }
-            steps {
                 sh "docker rmi kairops/duing:test kairops/duing:19.04 || true"
+                script { cfg.releaseTag = sh (script: "kd get-next-release-number .", returnStdout: true).trim() }
                 jplDockerPush (cfg, "kairops/duing", cfg.releaseTag, "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
                 jplDockerPush (cfg, "kairops/duing", "19.04", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
                 jplDockerPush (cfg, "kairops/duing", "latest", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
-                jplCloseRelease(cfg)
+                jplMakeRelease(cfg, true)
             }
         }
     }
@@ -66,7 +54,6 @@ pipeline {
         ansiColor('xterm')
         buildDiscarder(logRotator(artifactNumToKeepStr: '20',artifactDaysToKeepStr: '30'))
         disableConcurrentBuilds()
-        skipDefaultCheckout()
         timeout(time: 1, unit: 'DAYS')
     }
 }
