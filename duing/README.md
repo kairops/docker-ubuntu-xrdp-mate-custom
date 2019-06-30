@@ -136,3 +136,9 @@ And, of course...
 - Firefox and Chromium as web browser
 - PhantomJS as headless browser
 - BDDFire project as testing tramework
+
+## MVP
+
+There's our MVP, dated 2018-08-09
+
+![MVP](mvp.jpg "MVP")
