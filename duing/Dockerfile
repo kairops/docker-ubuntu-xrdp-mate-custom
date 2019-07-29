@@ -1,7 +1,7 @@
 FROM rattydave/docker-ubuntu-xrdp-mate-custom:19.04
 
 RUN apt-get update -y && \ 
-    apt-get install -yqq privoxy chromium-browser chromium-chromedriver gcc make ruby ruby-dev rubygems zlibc zlib1g zlib1g-dev libxml2 libxml2-dev gedit git npm firefox && \
+    apt-get install -yqq privoxy chromium-browser chromium-chromedriver gcc make ruby ruby-dev rubygems zlibc zlib1g zlib1g-dev libxml2 libxml2-dev gedit git npm firefox tesseract-ocr && \
     wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg | apt-key add - && \
     echo 'deb https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/debs/ vscodium main' >> /etc/apt/sources.list && \
     apt-get update -y && \
