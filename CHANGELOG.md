@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.8.1 (2019-07-29)
+
+### Update
+
+* Add tesseract ocr package ([ff38afa](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/ff38afa))
+
+### Build
+
+* Update Auto Release Log adding v0.8.1 info with JPL ([20b2a66](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/20b2a66))
+
+### Docs
+
+* Generate v0.8.0 changelog with JPL ([6ae14bf](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/6ae14bf))
+
 ## v0.8.0 (2019-06-30)
 
 ### Upgrade
