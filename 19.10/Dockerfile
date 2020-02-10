@@ -1,52 +1,13 @@
-FROM ubuntu:19.04 as builder
-
-ENV DEBIAN_FRONTEND noninteractive
-RUN sed -i "s/# deb-src/deb-src/g" /etc/apt/sources.list
-RUN apt-get -y update
-RUN apt-get -yy upgrade
-ENV BUILD_DEPS="git autoconf pkg-config libssl-dev libpam0g-dev \
-    libx11-dev libxfixes-dev libxrandr-dev nasm xsltproc flex \
-    bison libxml2-dev dpkg-dev libcap-dev"
-RUN apt-get -yy install  sudo apt-utils software-properties-common $BUILD_DEPS
-
-WORKDIR /tmp
-RUN apt-get source pulseaudio
-RUN apt-get build-dep -yy pulseaudio
-RUN ls
-WORKDIR /tmp/pulseaudio-12.2
-RUN dpkg-buildpackage -rfakeroot -uc -b
-WORKDIR /tmp
-RUN git clone --branch v0.9.7 --recursive https://github.com/neutrinolabs/xrdp.git
-WORKDIR /tmp/xrdp
-RUN ./bootstrap
-RUN ./configure
-RUN make
-RUN make install
-WORKDIR /tmp/xrdp/sesman/chansrv/pulse
-RUN sed -i "s/\/tmp\/pulseaudio\-10\.0/\/tmp\/pulseaudio\-12\.2/g" Makefile
-RUN make
-RUN mkdir -p /tmp/so
-RUN cp *.so /tmp/so
-
-
-
-FROM ubuntu:19.04
+FROM ubuntu:19.10
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
-ENV LANG en_GB.UTF-8
-ENV LANGUAGE en_GB:GB
-ENV LC_ALL en_GB.UTF-8
 
 RUN cd /root && \
     sed -i 's/^#\s*\(deb.*partner\)$/\1/g' /etc/apt/sources.list && \
+    sed -i 's/^#\s*\(deb.*restricted\)$/\1/g' /etc/apt/sources.list && \ 
     apt-get update -y && \ 
     apt-get install -yqq locales  && \ 
-    echo 'LANG="en_GB.UTF-8"' > /etc/default/locale && \ 
-    echo 'LANGUAGE="en_GB:en"' >> /etc/default/locale && \ 
-    echo 'LC_ALL="en_GB.UTF-8"' >> /etc/default/locale && \ 
-    locale-gen en_GB.UTF-8 && \ 
-    update-locale LANG=en_GB.UTF-8  && \ 
     apt-get install -yqq \
         mate-desktop-environment-core \
         mate-themes \
@@ -73,8 +34,7 @@ RUN cd /root && \
         ubuntu-mate-icon-themes \
         ubuntu-mate-themes \
         tightvncserver \
-        pulseaudio \
-        uuid-runtime && \
+        pulseaudio && \
     apt-get install --no-install-recommends -yqq \
         supervisor \
         sudo \
@@ -86,7 +46,7 @@ RUN cd /root && \
         curl \
         wget \
         epiphany-browser && \
-    ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && \
+    ln -fs /usr/share/zoneinfo/UTC /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && \
     apt-get -y install \
         git \
         libxfont-dev \
@@ -110,14 +70,26 @@ RUN cd /root && \
         xserver-xorg-dev \
         fuse \
         build-essential \
-        pkg-config && \
+        pkg-config \
+        libpulse-dev m4 intltool dpkg-dev \
+        libfdk-aac-dev \
+        libopus-dev \
+        libmp3lame-dev && \ 
+    apt-get update && apt build-dep pulseaudio -y && \
+    cd /tmp && apt source pulseaudio && \
+    pulsever=$(pulseaudio --version | awk '{print $2}') && cd /tmp/pulseaudio-$pulsever && ./configure  && \
+    git clone https://github.com/neutrinolabs/pulseaudio-module-xrdp.git && cd pulseaudio-module-xrdp && ./bootstrap && ./configure PULSE_DIR="/tmp/pulseaudio-$pulsever" && make && \
+    cd /tmp/pulseaudio-$pulsever/pulseaudio-module-xrdp/src/.libs && install -t "/var/lib/xrdp-pulseaudio-installer" -D -m 644 *.so && \
     cd /root && \
-    git clone -b devel https://github.com/neutrinolabs/xrdp.git && \
-    git clone -b devel https://github.com/neutrinolabs/xorgxrdp.git && \
-    cd /root/xrdp && ./bootstrap && ./configure --enable-fuse --enable-jpeg && make && make install && \
+    git clone -b master https://github.com/neutrinolabs/xrdp.git && \
+    git clone -b master https://github.com/neutrinolabs/xorgxrdp.git && \
+    cd /root/xrdp && ./bootstrap && ./configure --enable-fuse --enable-jpeg --enable-vsock --enable-fdkaac --enable-opus --enable-mp3lame --enable-pixman && make && make install && \
     cd /root/xorgxrdp  && ./bootstrap && ./configure && make && make install && \
+    cd /root && \
     rm -R /root/xrdp && \
     rm -R /root/xorgxrdp && \
+    # bugfix clipboard bug: [xrdp-chansrv] <defunct> && \
+    apt-mark manual libfdk-aac1 && \
     apt-get -y purge \
         git \
         libxfont-dev \
@@ -139,7 +111,10 @@ RUN cd /root && \
         nasm \
         xserver-xorg-dev \
         build-essential \
-        pkg-config && \
+        pkg-config \
+        libfdk-aac-dev \
+        libopus-dev \
+        libmp3lame-dev && \
         #        fuse \
     apt-get -y autoclean && apt-get -y autoremove && \
     apt-get -y purge $(dpkg --get-selections | grep deinstall | sed s/deinstall//g) && \
@@ -147,35 +122,31 @@ RUN cd /root && \
     echo "mate-session" > /etc/skel/.xsession && \
     sed -i '/TerminalServerUsers/d' /etc/xrdp/sesman.ini  && \
     sed -i '/TerminalServerAdmins/d' /etc/xrdp/sesman.ini  && \
-    sed -i -e '/DisconnectedTimeLimit=/ s/=.*/=300/' /etc/xrdp/sesman.ini && \
-    sed -i -e '/IdleTimeLimit=/ s/=.*/=300/' /etc/xrdp/sesman.ini && \
+    sed -i -e '/DisconnectedTimeLimit=/ s/=.*/=0/' /etc/xrdp/sesman.ini && \
+    sed -i -e '/IdleTimeLimit=/ s/=.*/=0/' /etc/xrdp/sesman.ini && \
     xrdp-keygen xrdp auto  && \
     mkdir -p /var/run/xrdp && \
     chmod 2775 /var/run/xrdp  && \
     mkdir -p /var/run/xrdp/sockdir && \
     chmod 3777 /var/run/xrdp/sockdir && \
-    echo "[program:sshd]" >/etc/supervisor/conf.d/sshd.conf && \
-    echo "command=/usr/sbin/sshd -D" >> /etc/supervisor/conf.d/sshd.conf && \
-    echo "stdout_logfile=/var/log/supervisor/%(program_name)s.log" >> /etc/supervisor/conf.d/sshd.conf && \
-    echo "stderr_logfile=/var/log/supervisor/%(program_name)s.log" >> /etc/supervisor/conf.d/sshd.conf && \
-    echo "autorestart=true" >> /etc/supervisor/conf.d/sshd.conf && \
+    touch /etc/skel/.Xauthority && \
+    mkdir /run/dbus/ && chown messagebus:messagebus /run/dbus/ && \
+    #dbus-uuidgen > /etc/machine-id && \
+    #ln -sf /var/lib/dbus/machine-id /etc/machine-id && \  
     echo "[program:xrdp-sesman]" > /etc/supervisor/conf.d/xrdp.conf && \
     echo "command=/usr/local/sbin/xrdp-sesman --nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "process_name = xrdp-sesman" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "[program:xrdp]" >> /etc/supervisor/conf.d/xrdp.conf && \
     echo "command=/usr/local/sbin/xrdp -nodaemon" >> /etc/supervisor/conf.d/xrdp.conf && \
-    echo "process_name = xrdp" >> /etc/supervisor/conf.d/xrdp.conf && \
-    mkdir /var/run/dbus && \
-    mkdir -p /var/lib/xrdp-pulseaudio-installer
+    echo "process_name = xrdp" >> /etc/supervisor/conf.d/xrdp.conf
+#RUN     echo "[program:dbus-daemon]" > /etc/supervisor/conf.d/dbus-daemon.conf && \
+#    echo "command=/usr/bin/dbus-daemon --system --nofork" >> /etc/supervisor/conf.d/dbus-daemon.conf && \
+#    echo "process_name = dbus-daemon" >> /etc/supervisor/conf.d/dbus-daemon.conf && \
+#    echo "user = messagebus"  >> /etc/supervisor/conf.d/dbus-daemon.conf
 
 ADD xrdp.ini /etc/xrdp/xrdp.ini
-ADD asound.conf /etc/asound.conf
 
-COPY --from=builder /tmp/so/module-xrdp-source.so /var/lib/xrdp-pulseaudio-installer
-COPY --from=builder /tmp/so/module-xrdp-sink.so /var/lib/xrdp-pulseaudio-installer
-
-ADD startup.sh /root/startup.sh
-CMD ["/bin/bash", "/root/startup.sh"]
+ADD autostartup.sh /root/autostartup.sh
+CMD ["/bin/bash", "/root/autostartup.sh"]
                                     
-EXPOSE 3389
-
+EXPOSE 3389 22

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#Set Timezone
+if [[ -z "${TZ}" ]]; then
+   ln -fs /usr/share/zoneinfo/Europe/London /etc/localtime
+   dpkg-reconfigure -f noninteractive tzdata
+else
+   ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime
+   dpkg-reconfigure -f noninteractive tzdata
+fi
+
 #CREATE USERS.
 # username:passsword:Y
 # username2:password2:Y
@@ -16,8 +25,13 @@ if [ -f $file ]
                 echo "User Exists"
               else
                 useradd -ms /bin/bash $username
+                usermod -aG audio $username
+                usermod -aG input $username
+                usermod -aG video $username
+                mkdir -p /run/user/$(id -u $username)/dbus-1/
+                chmod -R 700 /run/user/$(id -u $username)/
+                chown -R "$username" /run/user/$(id -u $username)/
                 echo "$username:$password" | chpasswd
-                gpasswd -a $username audio
                 if [ "$is_sudo" = "Y" ]
                   then
                     usermod -aG sudo $username
@@ -26,14 +40,13 @@ if [ -f $file ]
     done <"$file"
 fi
 
-#### Change hosts file stop ads.
+startfile="/root/startup.sh"
+if [ -f $startfile ]
+  then
+    sh $startfile
+fi
 
-#cd /root
-#rm hosts
-#wget -o newhosts.txt https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews/hosts
-#cat /etc/hosts.ori  >/etc/hosts
-#cat hosts >> /etc/hosts
-
+echo "export QT_XKB_CONFIG_ROOT=/usr/share/X11/locale" >> /etc/profile
 
 #This has to be the last command!
 /usr/bin/supervisord -n
