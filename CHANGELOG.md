@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.8.2 (2020-02-10)
+
+### Build
+
+* Update Auto Release Log adding v0.8.2 info with JPL ([a8528eb](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/a8528eb))
+* Update to jpl v3.4.1 ([f5d3cb0](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/f5d3cb0))
+
+### Docs
+
+* Generate v0.8.1 changelog with JPL ([2ace16a](https://github.com/kairops/docker-ubuntu-xrdp-mate-custom/commit/2ace16a))
+
 ## v0.8.1 (2019-07-29)
 
 ### Update
