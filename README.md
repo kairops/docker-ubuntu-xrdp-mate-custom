@@ -1,5 +1,31 @@
 Use https://github.com/RattyDAVE/docker-ubuntu-xrdp-mate-custom/issues to send feedback, issues, comments and general chat.
 
+### Quick Start
+
+Run the following to get started.
+
+```
+echo "user:pass:N" > CREATEUSERS.TXT
+docker run --name RattyDAVE19.10 \
+           --privileged=true \
+           -p 3389:3389 \
+           -e TZ="Europe/London"
+           -v CREATEUSERS.TXT:/root/createusers.txt \
+           -dit --restart unless-stopped \
+           rattydave/docker-ubuntu-xrdp-mate-custom:19.10
+```
+
+Then on a windows machine type
+
+```
+mstsc
+```
+
+Then put in the IP address of the docker host.
+
+Login using the username `user` and the password `pass`
+
+
 ## rattydave/docker-ubuntu-xrdp-mate-custom:stable points to 18.04
 ## rattydave/docker-ubuntu-xrdp-mate-custom:latest points to 19.10
 ## rattydave/docker-ubuntu-xrdp-mate-custom:beta points to 20.04
@@ -48,7 +74,19 @@ Contents:
 - Replace %LOCAL_PATH_TO_HOME_DIRECTORY% with the local directory of the /home directorys.
 - You do not need to publish port 22 only use if needed.
 
-Example startup.sh to change locale.
+This file contains 3 fields (username:password:is_sudo). Where username is the login id. Password is the password. is_sudo does the user have sudo access(only Y is recognised). It also needs a "newline" at the end of the line.  
+
+Example of a CREATEUSERS.TXT file
+```
+mickey:mouse:N
+daisy:duke:Y
+dog:flash:n
+morty:rick:wubba
+```
+In this example 4 users will be created and only daisy will have sudo rights.
+At every reboot it will check this file and ADD any new users.
+
+Example of a STARTUP.SH file to change locale.
 ```
 apt-get update
 apt-get -y install language-pack-de language-pack-gnome-de
@@ -66,6 +104,15 @@ Linux example of how to connect:
 xfreerdp /size:1920x1140 /kbd:0x00000809 /v:%IP_ADDRESS% /gdi:hw /drive:home,$HOME +clipboard /sound:sys:alsa +glyph-cache
 ```
 
+Windows example:
+
+Open a command prompt and type
+
+```
+mstsc
+````
+
+Then put in the ip address of the docker host.
 
 # Ubuntu 19.04 with XRDP and MATE. Version 19.04
 
