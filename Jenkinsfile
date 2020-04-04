@@ -1,43 +1,47 @@
 #!groovy
 
-@Library('github.com/red-panda-ci/jenkins-pipeline-library@v3.4.1') _
+@Library('github.com/teecke/jenkins-pipeline-library@v3.4.1') _
 
 // Initialize global config
-cfg = jplConfig('duing', 'docker', '', [email:'redpandaci+duing@gmail.com'])
+cfg = jplConfig('duing', 'docker', '', [email: env.CIKAIROS_NOTIFY_EMAIL_TARGETS])
+
+/**
+ * Build and publish docker images
+ *
+ * @param nextReleaseNumber String Release number to be used as tag
+ */
+def buildAndPublishDockerImage(nextReleaseNumber = "") {
+    if (nextReleaseNumber == "") {
+        nextReleaseNumber = sh (script: "kd get-next-release-number .", returnStdout: true).trim().substring(1)
+    }
+    docker.withRegistry("", 'cikairos-docker-credentials') {
+        def customImage = docker.build("kairops/duing:${nextReleaseNumber}", "--pull --no-cache .")
+        customImage.push()
+        if (nextReleaseNumber != "beta") {
+            customImage.push('latest')
+            customImage.push('19.04')
+        }
+    }
+}
 
 pipeline {
-    agent none
+    agent { label 'docker' }
 
     stages {
         stage ('Initialize') {
-            agent { label 'docker' }
             steps  {
                 jplStart(cfg)
             }
         }
         stage ('Build') {
-            agent { label 'docker' }
             steps {
-                script {
-                    docker.build('kairops/duing:test', '--pull --no-cache ./duing')
-                }
+                buildAndPublishDockerImage("beta")
             }
         }
-        stage ('Test') {
-            agent { label 'docker' }
-            steps  {
-                sh 'bin/test.sh'
-            }
-        }
-        stage ('Make new release automatically') {
-            agent { label 'docker' }
+        stage ('Make release') {
             when { branch 'release/new' }
             steps {
-                sh "docker rmi kairops/duing:test kairops/duing:19.04 || true"
-                script { cfg.releaseTag = sh (script: "kd get-next-release-number .", returnStdout: true).trim() }
-                jplDockerPush (cfg, "kairops/duing", cfg.releaseTag, "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
-                jplDockerPush (cfg, "kairops/duing", "19.04", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
-                jplDockerPush (cfg, "kairops/duing", "latest", "duing", "https://registry.hub.docker.com", "cikairos-docker-credentials")
+                buildAndPublishDockerImage()
                 jplMakeRelease(cfg, true)
             }
         }
@@ -54,6 +58,6 @@ pipeline {
         ansiColor('xterm')
         buildDiscarder(logRotator(artifactNumToKeepStr: '20',artifactDaysToKeepStr: '30'))
         disableConcurrentBuilds()
-        timeout(time: 1, unit: 'DAYS')
+        timeout(time: 10, unit: 'MINUTES')
     }
 }
