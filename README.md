@@ -1,6 +1,6 @@
 # DEPRECATED
 
-Please visit https://github.com/tpbtools/docker-ubuntu-xrdp-mate-custom
+Please visit https://github.com/ayudadigital/docker-ubuntu-xrdp-mate-custom
 
 Use https://github.com/RattyDAVE/docker-ubuntu-xrdp-mate-custom/issues to send feedback, issues, comments and general chat.
 
